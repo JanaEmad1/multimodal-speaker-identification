@@ -1,0 +1,18 @@
+# Developed on Python 3.11. Install with:  pip install -r requirements.txt
+
+# NOTE: the notebook uses TrainingArguments(evaluation_strategy=...), which was
+# renamed to eval_strategy in transformers 4.46 and removed afterwards.
+# Keep transformers below 4.46 or the Trainer cells will raise a TypeError.
+transformers<4.46
+datasets
+torch
+torchaudio
+scikit-learn
+numpy
+pandas
+matplotlib
+tqdm
+
+# explainability
+lime
+shap
