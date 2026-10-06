@@ -98,8 +98,6 @@ requirements.txt              dependencies
 LICENSE                       MIT
 ```
 
-Coursework for Cognitive Computing (multimodality), College of Artificial Intelligence, El Alamein.
-
 ## License
 
 MIT — see [LICENSE](LICENSE).
