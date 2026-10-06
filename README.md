@@ -33,6 +33,11 @@ The headline result is a **negative one**, and that is the interesting part: add
 | Late fusion | 90.0 % | 10 |
 | DistilBERT + MLM self-supervision, fine-tuned | 26.9 % | ~810 |
 
+<p align="center"><img src="docs/accuracy_by_modality.png" width="680" alt="Accuracy by setup with 95% confidence intervals: audio and fusion 90% (n=10, interval 60-98%), text 20-27%, near the 20% chance line"></p>
+
+The whiskers show why sample size matters: at n=10 the 95% interval for "90%" runs from 60% to 98%. The text-only
+result at n≈810 (24–30%) is the one tight interval on the chart, and it sits just above chance.
+
 ### What these numbers actually say
 
 1. **Text carries essentially no speaker identity — by construction.** Every CMU Arctic speaker reads *the same prompt sentences*. Two speakers therefore produce near-identical transcriptions, so a text model has nothing to separate them with. Text-only lands at 20.0 %, which is exactly chance for 5 classes.
@@ -45,8 +50,27 @@ The honest summary: **speaker identity lives in the audio, not the transcript**,
 
 ## Explainability
 
+<p align="center"><img src="docs/lime_example.png" width="640" alt="LIME: the model predicts speaker aup with 0.96 probability; the top features are MFCC-derived"></p>
+
 - **LIME** (audio classifier) — on the inspected example the model predicts `aup` with 96 % confidence, driven by a small number of MFCC-derived features crossing their decision thresholds.
 - **SHAP** (text classifier) — a `LinearExplainer` over the DistilBERT embedding features, consistent with the finding that no individual text dimension separates speakers well.
+
+## Business impact
+
+The useful result here is a **decision not to spend money**. Before a team pays to collect, label and serve a second
+modality, a cheap ablation like this one shows whether it carries any signal for the task.
+
+| Decision | Without this test | With it |
+|---|---|---|
+| Speaker verification for a call centre | Build an audio + transcript pipeline: an ASR licence, a text model, a fusion layer | **Ship audio-only.** Same accuracy, one model, no ASR cost or added latency |
+| Where to invest next | "Add more modalities" | Better audio features (deltas, a pretrained speech encoder) and **more test data** |
+
+As an illustration, if transcription costs about $0.01 per minute and a contact centre verifies callers on 1 million
+minutes a month, the text branch would add ~$10,000 a month for 0 points of accuracy. The ablation that rules this out
+costs one notebook run.
+
+The same habit carries over to client work: **test whether a feature or data source carries signal before building on
+it**, and report confidence intervals so that a 10-sample result isn't sold as a finding.
 
 ## Reproduce
 
@@ -68,6 +92,8 @@ Or open it directly in Colab with the badge above. The dataset downloads automat
 
 ```
 multimodal_speaker_id.ipynb   full pipeline, outputs included
+scripts/make_charts.py        draws docs/accuracy_by_modality.png
+docs/                         charts used in this README
 requirements.txt              dependencies
 LICENSE                       MIT
 ```
